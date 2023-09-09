@@ -1,8 +1,9 @@
 package com.apitheguardian.bean;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
-@JsonIgnoreProperties(ignoreUnknown = true)
+import java.util.Map;
+
 public class Article {
   String id;
   String type;
@@ -13,8 +14,23 @@ public class Article {
   String webUrl;
   String apiUrl;
   boolean isHosted;
+  String pillarId;
+  String pillarName;
+  String bodyText;
 
-  public Article(final String id, final String type, final String sectionId, final String sectionName, final String webPublicationDate, final String webTitle, final String webUrl, final String apiUrl, final boolean isHosted) {
+  public Article(
+          final String id,
+          final String type,
+          final String sectionId,
+          final String sectionName,
+          final String webPublicationDate,
+          final String webTitle,
+          final String webUrl,
+          final String apiUrl,
+          final boolean isHosted,
+          final String pillarId,
+          final String pillarName
+  ) {
     this.id = id;
     this.type = type;
     this.sectionId = sectionId;
@@ -24,6 +40,8 @@ public class Article {
     this.webUrl = webUrl;
     this.apiUrl = apiUrl;
     this.isHosted = isHosted;
+    this.pillarId = pillarId;
+    this.pillarName = pillarName;
   }
 
   public Article() {
@@ -101,18 +119,50 @@ public class Article {
     this.isHosted = isHosted;
   }
 
+  public String getPillarId() {
+    return pillarId;
+  }
+
+  public void setPillarId(final String pillarId) {
+    this.pillarId = pillarId;
+  }
+
+  public String getPillarName() {
+    return pillarName;
+  }
+
+  public void setPillarName(final String pillarName) {
+    this.pillarName = pillarName;
+  }
+
+  public String getBodyText() {
+    return bodyText;
+  }
+
+  public void setBodyText(final String bodyText) {
+    this.bodyText = bodyText;
+  }
+
+  @JsonProperty("fields")
+  private void unpackNested(Map<String, Object> fields) {
+    this.bodyText = (String) fields.get("bodyText");
+  }
+
   @Override
   public String toString() {
     return "Article{" +
-        "id='" + id + '\'' +
-        ", type='" + type + '\'' +
-        ", sectionId='" + sectionId + '\'' +
-        ", sectionName='" + sectionName + '\'' +
-        ", webPublicationDate='" + webPublicationDate + '\'' +
-        ", webTitle='" + webTitle + '\'' +
-        ", webUrl='" + webUrl + '\'' +
-        ", apiUrl='" + apiUrl + '\'' +
-        ", isHosted='" + isHosted + '\'' +
-        '}';
+            "id='" + id + '\'' +
+            ", type='" + type + '\'' +
+            ", sectionId='" + sectionId + '\'' +
+            ", sectionName='" + sectionName + '\'' +
+            ", webPublicationDate='" + webPublicationDate + '\'' +
+            ", webTitle='" + webTitle + '\'' +
+            ", webUrl='" + webUrl + '\'' +
+            ", apiUrl='" + apiUrl + '\'' +
+            ", isHosted='" + isHosted + '\'' +
+            ", pillarId='" + pillarId + '\'' +
+            ", pillarName='" + pillarName + '\'' +
+            ", bodyText='" + bodyText + '\'' +
+            '}';
   }
 }
