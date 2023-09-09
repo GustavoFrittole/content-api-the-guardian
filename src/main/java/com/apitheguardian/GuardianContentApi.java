@@ -47,6 +47,12 @@ public class GuardianContentApi {
   private Date toDate;
   private Date fromDate;
 
+  //variabile aggiunta
+  private String order;
+
+  //variabile aggiunta
+  private int pageSize;
+
   public GuardianContentApi(final String apiKey) {
     this.apiKey = apiKey;
   }
@@ -63,10 +69,6 @@ public class GuardianContentApi {
     this.toDate = date;
   }
 
-  public Response getContent() throws UnirestException {
-  return getContent(null);
-  }
-
   public String getTag() {
     return tag;
   }
@@ -75,13 +77,47 @@ public class GuardianContentApi {
     this.tag = tag;
   }
 
-  public Response getContent(String query) throws UnirestException {
+  //metodo aggiunto
+  public void setPageSize(int pageSize) {
+    this.pageSize = pageSize;
+  }
+
+  //metodo aggiunto
+  public void setOrder(String order) {
+    this.order = order;
+  }
+
+  //metodo modificato
+  public Response getContent(String query) {
+    return getContent(query, 1);
+  }
+
+  //metodo modificato
+  public Response getContent() {
+    return getContent(null, 1);
+  }
+
+  //metodo modificato
+  public Response getContent(String query, int page) {
 
     HttpRequest request = Unirest.get(TARGET_URL)
-        .queryString("api-key", apiKey)
-        .header("accept", "application/json");
+            .queryString("api-key", apiKey)
+            .header("accept", "application/json");
+
+    //sezione aggiunta
+    if (pageSize > 1 && pageSize < 201) {
+      request.queryString("page-size", pageSize);
+    }
+    //sezione aggiunta
+    if (page > 0) {
+      request.queryString("page", page);
+    }
     if (query != null && !query.isEmpty()) {
       request.queryString("q", query);
+    }
+    //sezione aggiunta
+    if (order != null && !order.isEmpty()) {
+      request.queryString("order-by", order);
     }
 
     if (section != null && !section.isEmpty()) {
@@ -92,14 +128,21 @@ public class GuardianContentApi {
       request.queryString("tag", tag);
     }
 
-    if (fromDate != null){
+    if (fromDate != null) {
       request.queryString("from-date", dateFormat.format(fromDate));
     }
-    if (toDate != null){
+    if (toDate != null) {
       request.queryString("to-date", dateFormat.format(toDate));
     }
 
-    HttpResponse<ResponseWrapper> response = request.asObject(ResponseWrapper.class);
+    request.queryString("show-fields", "all");
+
+    HttpResponse<ResponseWrapper> response = null;
+    try {
+      response = request.asObject(ResponseWrapper.class);
+    } catch (UnirestException e) {
+      throw new RuntimeException(e);
+    }
     return response.getBody().getResponse();
 
   }
